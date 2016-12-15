@@ -1,0 +1,324 @@
+// =============================================
+// @des:            utils
+// @author:         yzh
+// @url:
+// @time:           2016-12-14
+// @lastTime     	2016-12-14
+// @version         1.0
+// =============================================
+@charset "utf-8";
+
+//全局变量
+@psdWidth: 640px;
+@psdHeight: 1024px;
+@psdK: @psdHeight/@psdWidth;
+//@psd的取值决定采取何种布局
+//(-1/0, 1.50] -> psd 设计采取最小的（手机屏幕高度与宽度的比值）-》布局采取横向百分比
+//(1.50, 1.63] -> psd 设计坑爹 -》布局采取横向百分比
+//(1.63, 1.77) -> psd 设计坑爹 -》布局采取纵向百分比
+//[1.77, +1/0) -> psd 设计采取最大的（手机屏幕高度与宽度的比值）-》布局采取纵向百分比
+@layout: horizontal;
+//@layout: vertical;
+@fontFamily: "微软雅黑,Helvetica";
+@fontSize: 12px;
+@lineHeight: 1.3;
+@color: #000;
+@background: #fff;
+
+//@fontSizePre 至少要保证iPhone4 下 最小字体大小12px
+@fontSizePre: 12/320;
+@fontSize_320: 320px*@fontSizePre;
+@fontSize_375: 375px*@fontSizePre;
+@fontSize_414: 414px*@fontSizePre;
+@fontSize_640: 640px*@fontSizePre;
+@fontSize_720: 720px*@fontSizePre;
+@fontSize_750: 750px*@fontSizePre;
+@fontSize_800: 800px*@fontSizePre;
+
+
+//全局函数
+.img_layout(horizontal){
+  img{
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
+.img_layout(vertical){
+  img{
+    display: block;
+    width: auto;
+    height: 100%;
+  }
+}
+.img_layout(@_){
+}
+
+.writing_mode_layout(horizontal){
+  .writing-mode(horizontal-tb);
+}
+.writing_mode_layout(vertical){
+  .writing-mode(vertical-rl);
+}
+.writing_mode_layout(@_){
+}
+
+//盒子定位(老版本)
+.imgpos-top-hor(@w,@h,@w-c,@t){
+  position: absolute;
+  left: 50%;
+  margin-left: -(@w+@w-c)/@psdWidth*100%;
+  top: @t/@psdHeight*100%;
+  width: @w/@psdWidth*100%;
+}
+.imgpos-bot-hor(@w,@h,@w-c,@b){
+  position: absolute;
+  left: 50%;
+  margin-left: -(@w+@w-c)/@psdWidth*100%;
+  bottom: @b/@psdHeight*100%;
+  width: @w/@psdWidth*100%;
+}
+
+.imgpos-top-ver(@w,@h,@w-c,@t){
+  position: absolute;
+  left: 50%;
+  margin-left: -(@w+@w-c)/@psdHeight*100%;
+  top: @t/@psdHeight*100%;
+  height: @h/@psdHeight*100%;
+}
+.imgpos-bot-ver(@w,@h,@w-c,@b){
+  position: absolute;
+  left: 50%;
+  margin-left: -(@w+@w-c)/@psdHeight*100%;
+  bottom: @b/@psdHeight*100%;
+  height: @h/@psdHeight*100%;
+}
+
+//盒子定位(新版本)
+//默认PSD盒子容器大小
+.imgpos-top(horizontal,@w,@h,@w-c,@t){
+  margin-left: -(@w+@w-c)/@psdWidth*100%;
+  width: @w/@psdWidth*100%;
+}
+.imgpos-top(vertical,@w,@h,@w-c,@t){
+  margin-left: -(@w+@w-c)/@psdHeight*100%;
+  height: @h/@psdHeight*100%;
+}
+.imgpos-top(@_,@w,@h,@w-c,@t){
+  position: absolute;
+  left: 50%;
+  top: @t/@psdHeight*100%;
+}
+
+.imgpos-bot(horizontal,@w,@h,@w-c,@b){
+  margin-left: -(@w+@w-c)/@psdWidth*100%;
+  width: @w/@psdWidth*100%;
+}
+.imgpos-bot(vertical,@w,@h,@w-c,@b){
+  margin-left: -(@w+@w-c)/@psdHeight*100%;
+  height: @h/@psdHeight*100%;
+}
+.imgpos-bot(@_,@w,@h,@w-c,@b){
+  position: absolute;
+  left: 50%;
+  bottom: @b/@psdHeight*100%;
+}
+
+//盒子定位(新版本)
+//默认PSD
+//自定义盒子容器大小
+.imgpos-top_custom(horizontal,@w,@h,@w-c,@t,@boxW,@boxH){
+  margin-left: -(@w+@w-c)/@boxW*100%;
+  width: @w/@boxW*100%;
+}
+.imgpos-top_custom(vertical,@w,@h,@w-c,@t,@boxW,@boxH){
+  margin-left: -(@w+@w-c)/@boxH*100%;
+  height: @h/@boxH*100%;
+}
+.imgpos-top_custom(@_,@w,@h,@w-c,@t,@boxW,@boxH){
+  position: absolute;
+  left: 50%;
+  top: @t/@boxH*100%;
+}
+
+.imgpos-bot_custom(horizontal,@w,@h,@w-c,@b,@boxW,@boxH){
+  margin-left: -(@w+@w-c)/@boxW*100%;
+  width: @w/@boxW*100%;
+}
+.imgpos-bot_custom(vertical,@w,@h,@w-c,@b,@boxW,@boxH){
+  margin-left: -(@w+@w-c)/@boxH*100%;
+  height: @h/@boxH*100%;
+}
+.imgpos-bot_custom(@_,@w,@h,@w-c,@b,@boxW,@boxH){
+  position: absolute;
+  left: 50%;
+  bottom: @b/@boxH*100%;
+}
+
+//盒子内盒子定位(老版本)
+.imgpos-top_box(@w,@w-c,@t,@boxWidth,@boxHeight){
+  position: absolute;
+  left: 50%;
+  margin-left: -(@w+@w-c)/@boxWidth*100%;
+  top: @t/@boxHeight*100%;
+  width: @w/@boxWidth*100%;
+}
+.imgpos-bot_box(@w,@w-c,@b,@boxWidth,@boxHeight){
+  position: absolute;
+  left: 50%;
+  margin-left: -(@w+@w-c)/@boxWidth*100%;
+  bottom: @b/@boxHeight*100%;
+  width: @w/@boxWidth*100%;
+}
+
+//盒子内盒子定位(新版本)
+.newImgpos-box(lt,@w,@horizontal,@vertical,@boxWidth,@boxHeight){
+  left: @horizontal/@boxWidth*100%;
+  top: @vertical/@boxHeight*100%;
+}
+.newImgpos-box(lb,@w,@horizontal,@vertical,@boxWidth,@boxHeight){
+  left: @horizontal/@boxWidth*100%;
+  bottom: @vertical/@boxHeight*100%;
+}
+.newImgpos-box(rt,@w,@horizontal,@vertical,@boxWidth,@boxHeight){
+  right: @horizontal/@boxWidth*100%;
+  top: @vertical/@boxHeight*100%;
+}
+.newImgpos-box(rb,@w,@horizontal,@vertical,@boxWidth,@boxHeight){
+  right: @horizontal/@boxWidth*100%;
+  bottom: @vertical/@boxHeight*100%;
+}
+.newImgpos-box(@_,@w,@horizontal,@vertical,@boxWidth,@boxHeight){
+  position: absolute;
+  width: @w/@boxWidth*100%;
+}
+
+//png占位 替代了纯透明色的png图片
+.img_png(horizontal,@w,@h){
+  width: 100%;
+  height: 0;
+  padding-top: @h / @w * 100%;
+}
+.img_png(vertical,@w,@h){
+  width: 0;
+  height: 100%;
+  padding-left: @w / @h * 100%;
+}
+.img_png(@_,@w,@h){
+  position: relative;
+}
+
+//css精灵动画(兼容性不够好) - 根据业务可原子应用
+.sprits-x-end(@imgUrl,@num,@name,@t:1s,@dealy:0s,@count:infinite,@direction:normal){
+  .keyframes-backgroundPosition(@name,0%,0%,100%*@num/(@num - 1),0%);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: url(@imgUrl) 0% 0 no-repeat;
+  background-size: auto 100%;
+  &.active{
+    .animation(@name,@t,steps(@num,end),0s,@count,@direction);
+  }
+}   //@num-1 100除不净 左右抖动
+.sprits-x-start(@imgUrl,@num,@name,@t:1s,@dealy:0s,@count:infinite,@direction:normal){
+  .keyframes-backgroundPosition(@name,-100%*1/(@num - 1),0%,100%,0%);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: url(@imgUrl) 0% 0 no-repeat;
+  background-size: auto 100%;
+  &.active{
+    .animation(@name,@t,steps(@num,start),0s,@count,@direction);
+  }
+} //@num-1 100除不净左右抖动
+.sprits-y-end(@imgUrl,@num,@name,@t:1s,@dealy:0s,@count:infinite,@direction:normal){
+  .keyframes-backgroundPosition(@name,0%,0%,0%,100%*@num/(@num - 1));
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: url(@imgUrl) 0 0% no-repeat;
+  background-size: 100% auto;
+  &.active{
+    .animation(@name,@t,steps(@num,end),0s,@count,@direction);
+  }
+}   //@num-1 100除不净上下抖动
+.sprits-y-start(@imgUrl,@num,@name,@t:1s,@dealy:0s,@count:infinite,@direction:normal){
+  .keyframes-backgroundPosition(@name,0%,0%,0%,100%);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: url(@imgUrl) 0 0% no-repeat;
+  background-size: 100% auto;
+  &.active{
+    .animation(@name,@t,steps(@num - 1,start),0s,@count,@direction);
+  }
+} //@num-1 100除不净上下抖动
+
+.sprits-x-end-control(@imgUrl,@num,@name,@t:1s,@dealy:0s,@count:infinite,@direction:normal){
+  .keyframes-backgroundPosition(@name,0%,0%,100%*@num/(@num - 1),0%);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: url(@imgUrl) 0% 0 no-repeat;
+  background-size: auto 100%;
+  .animation(@name,@t,steps(@num,end),0s,@count,@direction);
+  .animation-play-state(running);
+  &.active{
+    .animation-play-state(paused);
+  }
+}   //@num-1 100除不净 左右抖动
+.sprits-x-start-control(@imgUrl,@num,@name,@t:1s,@dealy:0s,@count:infinite,@direction:normal){
+  .keyframes-backgroundPosition(@name,-100%*1/(@num - 1),0%,100%,0%);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: url(@imgUrl) 0% 0 no-repeat;
+  background-size: auto 100%;
+  .animation(@name,@t,steps(@num,start),0s,@count,@direction);
+  .animation-play-state(paused);
+  &.active{
+    .animation-play-state(running);
+  }
+} //@num-1 100除不净左右抖动
+.sprits-y-end-control(@imgUrl,@num,@name,@t:1s,@dealy:0s,@count:infinite,@direction:normal){
+  .keyframes-backgroundPosition(@name,0%,0%,0%,100%*@num/(@num - 1));
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: url(@imgUrl) 0 0% no-repeat;
+  background-size: 100% auto;
+  .animation(@name,@t,steps(@num,end),0s,@count,@direction);
+  .animation-play-state(paused);
+  &.active{
+    .animation-play-state(running);
+  }
+}   //@num-1 100除不净上下抖动
+.sprits-y-start-control(@imgUrl,@num,@name,@t:1s,@dealy:0s,@count:infinite,@direction:normal){
+  .keyframes-backgroundPosition(@name,0%,-100%*1/(@num - 1),0%,100%);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: url(@imgUrl) 0 0% no-repeat;
+  background-size: 100% auto;
+  .animation(@name,@t,steps(@num,start),0s,@count,@direction);
+  .animation-play-state(paused);
+  &.active{
+    .animation-play-state(running);
+  }
+} //@num-1 100除不净上下抖动

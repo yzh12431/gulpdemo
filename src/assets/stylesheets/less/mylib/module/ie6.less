@@ -1,0 +1,17 @@
+// =============================================
+// @des:            ie6
+// @author:         yzh
+// @url:
+// @time:           2016-12-14
+// @lastTime     	2016-12-14
+// @version         1.0
+// =============================================
+@charset "utf-8";
+
+.ie6(){
+  a *{cursor:pointer}
+  /* .png_fix{behavior: url(/sites/default/themes/zen/zen-internals/js/ie6/iepngfix.htc);} */
+  .position-fixed-top{position: absolute !important;top:expression(eval(document.documentElement.scrollTop))!important;}
+  .position-fixed-bottom{position: absolute !important;bottom: auto !important;top:expression(eval(document.documentElement.scrollTop+document.documentElement.clientHeight-this.offsetHeight-(parseInt(this.currentStyle.marginTop,10)||0)-(parseInt(this.currentStyle.marginBottom,10)||0))) !important;}
+}
+

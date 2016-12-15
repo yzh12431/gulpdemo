@@ -1,0 +1,864 @@
+// =============================================
+// @des:            core
+// @author:         yzh
+// @url:
+// @time:           2016-12-14
+// @lastTime     	2016-12-14
+// @version         1.0
+// =============================================
+
+// =============================================
+//less 嵌套 注意层次（按照css选择层次来不要按照html结构来嵌套）-》避免css选择符过长
+//less注释2种不同 //这个编译过后就没有了 /**/这个编译过后有 一般用//
+//                      采用less架构css背景
+//CSS兼容性问题：浏览器渲染引擎
+//从3个方面来考虑兼容：1.CSS选择器 2.CSS属性 3.CSS属性值
+//解决方案：1.优雅降级 2.CSS hack 3.替代布局
+//css hack 1.条件注释法 2.属性前缀法 3.选择器前缀法
+//ie6  '_' '*' '-' '+'
+//ie7  '*' '+'
+//ie8  '\9' '\0'
+//ie9  '\9' '\0' '\9\0'
+//ie10  '\9' '\0' '\9\0'
+// =============================================
+
+@charset "utf-8";
+
+//hook css
+.hookCSS(){
+  //清除浮动
+  .clearBox{
+    clear:both;
+  }
+  .clearfix:after{
+    content:".";
+    display:block;
+    height:0;
+    visibility:hidden;
+    clear:both;
+  }
+  .clearfix{
+    *zoom:1;
+  }
+  //不推荐 Unicode字符不适合内嵌CSS的GB2312编码的页面
+  .clearfix_a:after{
+    content:"\200B";
+    display:block;
+    height:0;
+    clear:both;
+  }
+  .clearfix_a{
+    *zoom:1;
+  }
+  .clearfix_b:before,.clearfix_b:after{
+    content: "";
+    display: table;
+    line-height: 0;
+  }
+  .clearfix_b:after{
+    clear: both;
+  }
+  .clearfix_b{
+    *zoom: 1;
+  }
+  //浮动
+  .fl{
+    float: left;
+  }
+  .fr{
+    float: right;
+  }
+  //另一种浮动方式
+  .inlineBlockFloat{
+    .dis_inlineBlock();
+    vertical-align: middle;
+  }
+}
+
+
+//css2
+//去除a和label获取焦点时出现虚线
+//测试IE浏览器当a获取焦点时出现虚框(js:<a href="###" onfocus=this.blur();>文字</a>)
+.remove_dotted(){
+  a,label {blr:~'expression(this.onFocus=this.blur())'}
+  a,label {outline:none;}
+}
+
+//浮动
+.fl(@fl:left){
+  float: @fl;
+}
+.fr(@fr:right){
+  float: @fr;
+}
+//另一种浮动方式
+.inlineBlockFloat(@va:middle){
+  .dis_inlineBlock();
+  vertical-align: @va;
+}
+//清浮动
+.clearfix() {
+  &:after{
+    content:".";
+    display:block;
+    height:0;
+    visibility:hidden;
+    clear:both;
+  }
+  *zoom:1;
+}
+//不推荐 Unicode字符不适合内嵌CSS的GB2312编码的页面
+.clearfix_a(){
+  &:after{
+    content:"\200B";
+    display:block;
+    height:0;
+    clear:both;
+  }
+  *zoom:1;
+}
+.clearfix_b(){
+  &:before,&:after{
+    content: "";
+    display: table;
+    line-height: 0;
+  }
+  &:after{
+    clear: both;
+  }
+  *zoom: 1;
+}
+
+//定位
+//全局定位
+.pos (r){
+  position: relative;
+}
+.pos (a){
+  position: absolute;
+}
+.pos (f){
+  position: fixed;
+}
+//定位左上角
+.pos-box(@w:500px,@h:400px,@pos:absolute){
+  width: @w;
+  height: @h;
+  position: absolute;
+  left:0;
+  top:0;
+}
+//定位居中
+.pos-box-cc(@w:600px,@h:360px,@pos:absolute){
+  width: @w;
+  height: @h;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -@w / 2;
+  margin-top: -@h / 2;
+}
+
+//兼容IE6,7 inline-block
+//IE6、7 并不是不支持 inline-block，只是 block 元素需要做一些处理来达到 inline-block 的效果。
+//IE6、7中inline元素通过zoom:1获得hasLayout后就可以设置宽高了，
+//block元素先变成inline元素后再通过zoom:1获得hasLayout后就可以设置宽高了
+//结论:通过下面的样式后，IE6,7 中的元素可以表现为inline-block
+.dis_inlineBlock(){
+  display: inline-block;
+  *display: inline;
+  *zoom:1;
+}
+//背景图片固定定位
+.bga-fix(){
+  background-attachment: fixed;
+}
+
+//min-height,max-height,min-width,max-width
+//ie6不支持min-height属性，为了达到相同效果在ie6下使用了height且没有设置overflow属性,当内容超出高度时，ie6会自动撑开高度的
+//min-width的配合position:absolute/fixed以及display:inline-block
+.min-width(@width){
+  min-width: @width;
+  _width:@width;
+  _white-space: nowrap;
+}
+.max-width(@width,@id) {
+  max-width: @width;
+  _width: ~'expression(document.getElementById("@{id}").offsetHeight>parseInt("@{width}")?"@{width}": "auto")';
+  overflow: hidden;
+}
+.min-height(@height){
+  min-height: @height;
+  _height:@height;
+}
+//IE6兼容方法，给需要添加最大高度的容器里面的内容在包一层(建议使用div)，然后给一个ID,
+.max-height(@height,@id){
+  max-height: @height;
+  _height:~'expression(document.getElementById("@{id}").offsetHeight>parseInt("@{height}")?"@{height}": "auto")';
+  overflow: hidden;
+}
+
+//画三角箭头
+.triangle(top,@w:5px,@c:#ccc){
+  border-width: @w;
+  border-color: transparent transparent @c transparent;
+  border-style: dashed dashed solid dashed;
+}
+.triangle(bottom,@w:5px,@c:#ccc){
+  border-width: @w;
+  border-color: @c  transparent transparent transparent;
+  border-style: solid dashed dashed dashed;
+}
+.triangle(right,@w:5px,@c:#ccc){
+  border-width: @w;
+  border-color: transparent @c transparent transparent;
+  border-style: dashed solid dashed dashed;
+}
+.triangle(left,@w:5px,@c:#ccc){
+  border-width: @w;
+  border-color: transparent transparent transparent @c;
+  border-style: dashed dashed dashed solid;
+}
+.triangle(@_,@w:5px,@c:#ccc){
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+//writing-mode
+.writing-mode(horizontal-tb){
+  -webkit-writing-mode: horizontal-tb;
+  writing-mode: horizontal-tb;
+  writing-mode: lr-tb;
+}
+.writing-mode(vertical-rl){
+  -webkit-writing-mode: vertical-rl;
+  writing-mode: vertical-rl;
+  writing-mode: tb-rl;
+}
+.writing-mode(vertical-lr){
+  -webkit-writing-mode: vertical-lr;
+  writing-mode: vertical-lr;
+  writing-mode: tb-lr;
+}
+.writing-mode(@_){
+}
+
+//css3
+//禁止选择文本
+//user-select：none | text | all | element
+//默认值：text
+//onselectstart="return false;"   unselectable="on" html 属性
+.user-select(){
+  -webkit-user-select:none;
+  -moz-user-select:none;
+  -ms-user-select:none;
+  -o-user-select:none;
+  user-select:none;
+}
+
+//当用户点击iOS的Safari浏览器中的链接或JavaScript的可点击的元素时，覆盖显示的高亮颜色
+.tap-highlight-color(){
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -moz-tap-highlight-color: rgba(0, 0, 0, 0);
+  -ms-tap-highlight-color: rgba(0, 0, 0, 0);
+  -o-tap-highlight-color: rgba(0, 0, 0, 0);
+  tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+//混合——透明度
+.opacity(@o:50){
+  opacity: @o/100;
+  filter: ~"alpha(opacity=@{o})";
+}
+//半透明背景颜色
+//ie6,7,8 不支持(IEtest中ie6没效果)
+.background-color-rgba(@red, @green, @blue, @alpha:1){
+  @filtercolor:`(_f = function(d){ var v = (parseInt(d)|0).toString(16);return v.length<2 ? "0"+v : v;},
+                                        '#'+_f(@{alpha}*255) + _f(@{red}) + _f(@{green})+ _f(@{blue}))`;
+  background-color: ~'rgba(@{red},@{green},@{blue},@{alpha})';
+  *-ms-filter:~"progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='@{filtercolor}',endColorstr='@{filtercolor}')";
+  *filter:~"progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='@{filtercolor}',endColorstr='@{filtercolor}')";
+}
+//box-sizing 盒模型计算方式
+.box-sizing(@boxmodel: content-box) {
+  -webkit-box-sizing: @boxmodel;
+  -moz-box-sizing: @boxmodel;
+  box-sizing: @boxmodel;
+}
+//appearance 标准的用户界面元素。
+.appearance(@b: none) {
+  appearance: @b;
+  -moz-appearance: @b;
+  -webkit-appearance: @b;
+}
+//混合——圆角
+.border-radius(@radius:5px){
+  -webkit-border-radius: @radius;
+  -moz-border-radius: @radius;
+  border-radius: @radius;
+}
+.border-radius_a2(@r1:5px,@r2:5px){
+  -webkit-border-radius: @r1 @r2;
+  -moz-border-radius: @r1 @r2;
+  border-radius: @r1 @r2;
+}
+.border-radius_a4(@r1:5px,@r2:5px,@r3:5px,@r4:5px){
+  -webkit-border-radius: @r1 @r2 @r3 @r4;
+  -moz-border-radius:@r1 @r2 @r3 @r4;
+  border-radius: @r1 @r2 @r3 @r4;
+}
+//box-shadow 盒阴影
+.box-shadow-outset(@shadow-x,@shadow-y,@blur,@spread,@color){
+  box-shadow: @shadow-x @shadow-y @blur @spread @color;
+  -webkit-box-shadow: @shadow-x @shadow-y @blur @spread @color;
+  -moz-box-shadow: @shadow-x @shadow-y @blur @spread @color;
+}
+.box-shadow-inset(@shadow-x,@shadow-y,@blur,@spread,@color){
+  box-shadow: @shadow-x @shadow-y @blur @spread @color inset;
+  -webkit-box-shadow: @shadow-x @shadow-y @blur @spread @color inset;
+  -moz-box-shadow: @shadow-x @shadow-y @blur @spread @color inset;
+}
+.box-shadow(@style){
+  box-shadow: @style;
+  -webkit-box-shadow: @style;
+  -moz-box-shadow: @style;
+}
+.box-shadow-m02(@style01,@style02){
+  box-shadow: @style01,@style02;
+  -webkit-box-shadow: @style01,@style02;
+  -moz-box-shadow: @style01,@style02;
+}
+.box-shadow-m03(@style01,@style02,@style03){
+  box-shadow: @style01,@style02,@style03;
+  -webkit-box-shadow: @style01,@style02,@style03;
+  -moz-box-shadow: @style01,@style02,@style03;
+}
+.box-shadow-m04(@style01,@style02,@style03,@style04){
+  box-shadow: @style01,@style02,@style03,@style04;
+  -webkit-box-shadow: @style01,@style02,@style03,@style04;
+  -moz-box-shadow: @style01,@style02,@style03,@style04;
+}
+
+//text-shadow and Common effect
+.text-shadow(@style){
+  text-shadow: @style;
+}
+.text-effect-3d(@color){
+  color: @color;
+  text-shadow: 1px 1px 0px darken(@color,5%),
+  2px 2px 0px darken(@color,10%),
+  3px 3px 0px darken(@color,15%),
+  4px 4px 0px darken(@color,20%),
+  4px 4px 2px #000;
+}
+.text-effect-neon(@fontColor:#fff,@blurColor:#ff00de){
+  color: @fontColor;
+  text-shadow: 0 0 5px @fontColor, 0 0 10px @fontColor, 0 0 15px @fontColor, 0 0 40px @blurColor, 0 0 70px @blurColor;
+}
+.text-effect-apple(){
+  color: #000;
+  text-shadow: 0 1px 1px #fff;
+}
+.text-effect-emboss(){
+  color: #ccc;
+  text-shadow: -1px -1px 0 #fff,1px 1px 0 #333,1px 1px 0 #444;
+}
+.text-effect-blury(){
+  color: transparent;
+  text-shadow: 0 0 5px #f96;
+}
+.text-effect-embossAndbiury(){
+  color: transparent;
+  text-shadow: 0 0 6px #f96,-1px -1px #fff,1px -1px #444;
+}
+.text-effect-inset(){
+  color: #566f89;
+  background-color: #c5dff8;
+  text-shadow: 1px 1px 0 #e4f1ff;
+}
+.text-effect-stroke(){
+  color: #fff;
+  text-shadow: 1px 1px 0 #f96,-1px -1px 0 #f96;
+}
+.text-effect-retro(){
+  color: #eee;
+  text-shadow: 5px 5px 0 #666, 7px 7px 0 #eee;
+}
+.text-effect-anaglyphic(){
+  color: rgba(255, 179, 140,0.5);
+  text-shadow: 3px 3px 0 rgba(180,255,0,0.5);
+}
+
+//自定义字体 @font-face
+.font-face(@f: rootfont,@url_eot,@url_ttf,@url_woff,@url_svg){
+  @font-face{
+    font-family: @f;
+    src:url(@url_eot); /* IE9 Compat Modes*/
+    src:url('@{url_eot}?iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url(@url_ttf) format('truetype'), /* Safari, Android, ios */
+    url(@url_woff) format('woff'), /* Modern Browsers */
+    url(@url_svg) format('svg'); /* Legacy ios */
+    font-weight: normal;
+    font-style: normal;
+  }
+}
+
+//transform
+//translate
+.transformt-translateX(@x: 0px){
+  -webkit-transform: translateX(@x);
+  -moz-transform: translateX(@x);
+  -ms-transform: translateX(@x);
+  -o-transform: translateX(@x);
+  transform: translateX(@x);
+}
+.transformt-translateY(@y: 0px){
+  -webkit-transform: translateY(@y);
+  -moz-transform: translateY(@y);
+  -ms-transform: translateY(@y);
+  -o-transform: translateY(@y);
+  transform: translateY(@y);
+}
+.transformt-translateZ(@z: 0px){
+  -webkit-transform: translateZ(@z);
+  -moz-transform: translateZ(@z);
+  -ms-transform: translateZ(@z);
+  -o-transform: translateZ(@z);
+  transform: translateZ(@z);
+}
+.transformt-translate(@x:0px,@y:0px){
+  -webkit-transform: translate(@x,@y);
+  -moz-transform: translate(@x,@y);
+  -ms-transform: translate(@x,@y);
+  -o-transform: translate(@x,@y);
+  transform: translate(@x,@y);
+}
+.transformt-translate3d(@x: 0px, @y: 0px, @z: 0px) {
+  -webkit-transform: translate3d(@x,@y,@z);
+  -moz-transform: translate3d(@x,@y,@z);
+  -ms-transform: translate3d(@x,@y,@z);
+  -o-transform: translate3d(@x,@y,@z);
+  transform: translate3d(@x,@y,@z);
+}
+//scale
+.transform-scaleX(@x: 1) {
+  -webkit-transform: scaleX(@arguments);
+  -moz-transform: scaleX(@arguments);
+  -ms-transform: scaleX(@arguments);
+  -o-transform: scaleX(@arguments);
+  transform: scaleX(@arguments);
+}
+.transform-scaleY(@y: 1) {
+  -webkit-transform: scaleY(@arguments);
+  -moz-transform: scaleY(@arguments);
+  -ms-transform: scaleY(@arguments);
+  -o-transform: scaleY(@arguments);
+  transform: scaleY(@arguments);
+}
+.transform-scaleZ(@z: 1) {
+  -webkit-transform: scaleZ(@arguments);
+  -moz-transform: scaleZ(@arguments);
+  -ms-transform: scaleZ(@arguments);
+  -o-transform: scaleZ(@arguments);
+  transform: scaleZ(@arguments);
+}
+.transform-scale(@r:1){
+  -webkit-transform: scale(@r);
+  -moz-transform: scale(@r);
+  -ms-transform: scale(@r);
+  -o-transform: scale(@r);
+  transform: scale(@r);
+}
+.transform-scale_2D(@x:1,@y:1){
+  -webkit-transform: scale(@x,@y);
+  -moz-transform: scale(@x,@y);
+  -ms-transform: scale(@x,@y);
+  -o-transform: scale(@x,@y);
+  transform: scale(@x,@y);
+}
+.transform-scale3d(@x:1,@y:1,@z:1){
+  -ms-transform: scale3d(@x,@y,@z);
+  -webkit-transform: scale3d(@x,@y,@z);
+  -moz-transform: scale3d(@x,@y,@z);
+  transform: scale3d(@x,@y,@z);
+}
+//rotate
+.transform-rotate(@degrees:0deg){
+  -webkit-transform: rotate(@degrees);
+  -moz-transform: rotate(@degrees);
+  -ms-transform: rotate(@degrees);
+  -o-transform: rotate(@degrees);
+  transform: rotate(@degrees);
+}
+.transform-rotateX(@degrees: 0deg){
+  -webkit-transform: rotateX(@degrees);
+  -moz-transform: rotateX(@degrees);
+  -ms-transform: rotateX(@degrees);
+  -o-transform: rotateX(@degrees);
+  transform: rotateX(@degrees);
+}
+.transform-rotateY(@degrees: 0deg){
+  -webkit-transform: rotateY(@degrees);
+  -moz-transform: rotateY(@degrees);
+  -ms-transform: rotateY(@degrees);
+  -o-transform: rotateY(@degrees);
+  transform: rotateY(@degrees);
+}
+.transform-rotateZ(@degrees: 0deg){
+  -webkit-transform: rotateZ(@degrees);
+  -moz-transform: rotateZ(@degrees);
+  -ms-transform: rotateZ(@degrees);
+  -o-transform: rotateZ(@degrees);
+  transform: rotateZ(@degrees);
+}
+.transform-rotate3d(@x: 0, @y: 0, @z: 0, @degrees: 0deg){
+  -webkit-transform: rotate3d(@x,@y,@z,@degrees);
+  -moz-transform: rotate3d(@x,@y,@z,@degrees);
+  -ms-transform: rotate3d(@x,@y,@z,@degrees);
+  -o-transform: rotate3d(@x,@y,@z,@degrees);
+  transform: rotate3d(@x,@y,@z,@degrees);
+}
+//skew
+.transformt-skewX(@x: 0deg) {
+  -webkit-transform: skewX(@x);
+  -moz-transform: skewX(@x);
+  -ms-transform: skewX(@x);
+  -o-transform: skewX(@x);
+  transform: skewX(@x);
+  -webkit-backface-visibility: hidden;
+}
+.transformt-skewY(@y: 0deg) {
+  -webkit-transform: skewY(@y);
+  -moz-transform: skewY(@y);
+  -ms-transform: skewY(@y);
+  -o-transform: skewY(@y);
+  transform: skewY(@y);
+  -webkit-backface-visibility: hidden;
+}
+.transformt-skew(@x: 0deg, @y: 0deg) {
+  -webkit-transform: skew(@x,@y);
+  -moz-transform: skew(@x,@y);
+  -ms-transform: skewX(@x) skewY(@y);
+  -o-transform: skew(@x,@y);
+  transform: skew(@x,@y);
+  -webkit-backface-visibility: hidden;
+}
+
+//matrix
+//x'= ax+cy+e; y'= bx+dy+f
+.transformt-matrix(@a:1,@b:0,@c:0,@d:1,@e:0,@f:0){
+  -webkit-transform: matrix(@a,@b,@c,@d,@e,@f);
+  -moz-transform: matrix(@a,@b,@c,@d,@e~'px',@f~'px');
+  -ms-transform: matrix(@a,@b,@c,@d,@e,@f);
+  -o-transform: matrix(@a,@b,@c,@d,@e,@f);
+  transform: matrix(@a,@b,@c,@d,@e,@f);
+}
+
+//镜像对称对于（y=kx） matrix((1-k*k) / (1+k*k), 2k / (1 + k*k), 2k / (1 + k*k), (k*k - 1) / (1+k*k), 0, 0)
+.transformt-matrix-mirror(@k:0){
+  .transformt-matrix((1-@k*@k) / (1+@k*@k), 2*@k / (1 + @k*@k), 2*@k / (1 + @k*@k), (@k*@k - 1) / (1+@k*@k), 0, 0);
+}
+
+//matrix3d
+//1, 0, 0, 0,    0, 1, 0, 0,      0, 0, 1, 0,     0, 0, 0, 1
+.transformt-matrix3d(@a1:1,@a2:0,@a3:0,@a4:0,@b1:0,@b2:1,@b3:0,@b4:0,@c1:0,@c2:0,@c3:1,@c4:0,@d1:0,@d2:0,@d3:0,@d4:1){
+  -webkit-transform: matrix3d(@a1,@a2,@a3,@a4,@b1,@b2,@b3,@b4,@c1,@c2,@c3,@c4,@d1,@d2,@d3,@d4);
+  -moz-transform: matrix3d(@a1,@a2,@a3,@a4,@b1,@b2,@b3,@b4,@c1,@c2,@c3,@c4,@d1,@d2,@d3,@d4);
+  -ms-transform: matrix3d(@a1,@a2,@a3,@a4,@b1,@b2,@b3,@b4,@c1,@c2,@c3,@c4,@d1,@d2,@d3,@d4);
+  -o-transform: matrix3d(@a1,@a2,@a3,@a4,@b1,@b2,@b3,@b4,@c1,@c2,@c3,@c4,@d1,@d2,@d3,@d4);
+  transform: matrix3d(@a1,@a2,@a3,@a4,@b1,@b2,@b3,@b4,@c1,@c2,@c3,@c4,@d1,@d2,@d3,@d4);
+}
+
+.transformt(@tr:none){
+  -webkit-transform: @tr;
+  -moz-transform: @tr;
+  -ms-transform: @tr;
+  -o-transform: @tr;
+  transform: @tr;
+}
+
+//transform-style 属性规定如何在 3D 空间中呈现被嵌套的元素
+//flat | preserve-3d
+.transform-style(@style:flat){
+  -ms-transform-style:@style;
+  -webkit-transform-style:@style;
+  -moz-transform-style:@style;
+  -o-transform-style:@style;
+  ransform-style:@style;
+}
+
+//transform-origin 设置旋转元素的基点位置
+//x-axis -> left center right length %
+//y-axis -> top center bottom length %
+//z-axis -> length
+//默认值：50% 50% 0
+.transform-origin(@x:50%,@y:50%){
+  -ms-transform-origin:@x @y;
+  -webkit-transform-origin:@x @y;
+  -moz-transform-origin:@x @y;
+  -o-transform-origin:@x @y;
+  ransform-origin:@x @y;
+}
+.transform-origin3D(@x:50%,@y:50%,@z:0){
+  -ms-transform-origin:@x @y @z;
+  -webkit-transform-origin:@x @y @z;
+  -moz-transform-origin:@x @y @z;
+  -o-transform-origin:@x @y @z;
+  transform-origin:@x @y @z;
+}
+
+//perspective-origin 设置3D元素的基点位置
+//x-axis -> left center right length %
+//y-axis -> top  center bottom length %
+//默认值：50% 50%
+.perspective-origin(@x:50%,@y:50%){
+  -webkit-perspective-origin: @x @y;
+  -moz-perspective-origin: @x @y;
+  -ms-perspective-origin: @x @y;
+  -o-perspective-origin: @x @y;
+  perspective-origin: @x @y;
+}
+
+//perspective 属性定义3D元素距视图的距离
+//number|none
+//默认值：none 等价于 0
+.perspective(@n:0px){
+  -webkit-perspective: @n;
+  -moz-perspective: @n;
+  -ms-perspective: @n;
+  -o-perspective: @n;
+  perspective: @n;
+}
+
+//mask 遮罩图片层 目前只支持webkit核心的浏览器
+.mask(@attachment,@clip,@origin,@image,@repeat,@composite,@box-image){
+  -webkit-mask: @attachment @clip @origin @image @repeat @composite @box-image;
+  -moz-mask: @attachment @clip @origin @image @repeat @composite @box-image;
+  -ms-mask: @attachment @clip @origin @image @repeat @composite @box-image;
+  -o-mask: @attachment @clip @origin @image @repeat @composite @box-image;
+  mask: @attachment @clip @origin @image @repeat @composite @box-image;
+}
+//mask-attachment
+.mask-attachment(@attachment){
+  -webkit-mask-attachment: @attachment;
+  -moz-mask-attachment: @attachment;
+  -ms-mask-attachment: @attachment;
+  -o-mask-attachment: @attachment;
+  mask-attachment: @attachment;
+}
+//mask-clip
+.mask-clip(@clip){
+  -webkit-mask-clip: @clip;
+  -moz-mask-clip: @clip;
+  -ms-mask-clip: @clip;
+  -o-mask-clip: @clip;
+  mask-clip: @clip;
+}
+//mask-origin
+.mask-origin(@origin){
+  -webkit-mask-origin: @origin;
+  -moz-mask-origin: @origin;
+  -ms-mask-origin: @origin;
+  -o-mask-origin: @origin;
+  mask-origin: @origin;
+}
+//mask-image
+.mask-image(@image){
+  -webkit-mask-image: @image;
+  -moz-mask-image: @image;
+  -ms-mask-image: @image;
+  -o-mask-image: @image;
+  mask-image: @image;
+}
+.mask-image-m3(@image01,@image02,@image03){
+  -webkit-mask-image: @image01, @image02, @image03;
+  -moz-mask-image: @image01, @image02, @image03;
+  -ms-mask-image: @image01, @image02, @image03;
+  -o-mask-image: @image01, @image02, @image03;
+  mask-image: @image01, @image02, @image03;
+}
+//mask-repeat
+.mask-repeat(@repeat:stretch){
+  -webkit-mask-repeat: @repeat;
+  -moz-mask-repeat: @repeat;
+  -ms-mask-repeat: @repeat;
+  -o-mask-repeat: @repeat;
+  mask-repeat: @repeat;
+}
+//mask-composite
+.mask-composite(@composite:border){
+  -webkit-mask-composite: @composite;
+  -moz-mask-composite: @composite;
+  -ms-mask-composite: @composite;
+  -o-mask-composite: @composite;
+  mask-composite: @composite;
+}
+//mask-box-image
+.mask-box-image(@box-image){
+  -webkit-mask-box-image: @box-image;
+  -moz-mask-box-image: @box-image;
+  -ms-mask-box-image: @box-image;
+  -o-mask-box-image: @box-image;
+  mask-box-image: @box-image;
+}
+
+//mask-position
+.mask-position(@position){
+  -webkit-mask-position: @position;
+  -moz-mask-position: @position;
+  -ms-mask-position: @position;
+  -o-mask-position: @position;
+  mask-position: @position;
+}
+//mask-size
+.mask-size(@size){
+  -webkit-mask-size: @size;
+  -moz-mask-size: @size;
+  -ms-mask-size: @size;
+  -o-mask-size: @size;
+  mask-size: @size;
+}
+
+
+//transition 过渡
+.transition(@property:all,@duration:0s,@operation:ease,@delay:0s){
+  -webkit-transition:@property @duration @operation @delay;
+  -moz-transition:@property @duration @operation @delay;
+  -ms-transition:@property @duration @operation @delay;
+  -o-transition:@property @duration @operation @delay;
+  transition:@property @duration @operation @delay;
+}
+.transition-transform(@duration:0s,@operation:ease,@delay:0s){
+  -webkit-transition: -webkit-transform @duration @operation @delay;
+  -moz-transition: -moz-transform @duration @operation @delay;
+  -ms-transition: -ms-transform @duration @operation @delay;
+  -o-transition: -o-transform @duration @operation @delay;
+  transition: transform @timer @duration @delay;
+}
+.transition-m2(@t1:all 0s easy 0s, @t2:all 0s easy 0s){
+  -webkit-transition:@t1, @t2;
+  -moz-transition:@t1, @t2;
+  -ms-transition:@t1, @t2;
+  -o-transition:@t1, @t2;
+  transition:@t1, @t2;
+}
+//transition-property
+.transition-property(@property:all){
+  -webkit-transition-property: @property;
+  -moz-transition-property: @property;
+  -o-transition-property: @property;
+  -ms-transition-property: @property;
+  transition-property: @property;
+}
+//transition-duration
+.transition-duration(@duration: 0s){
+  -webkit-transition-duration: @duration;
+  -moz-transition-duration: @duration;
+  -o-transition-duration: @duration;
+  -ms-transition-duration: @duration;
+  transition-duration: @duration;
+}
+//transition-timing-function
+//ease | linear | ease-in | ease-out | ease-in-out | step-start | step-end
+//  steps(<integer>[, [ start | end ] ]?)
+//  cubic-bezier(<number>, <number>, <number>, <number>)
+.transition-timing-function(@operation: ease){
+  -webkit-transition-timing-function: @operation;
+  -moz-transition-timing-function: @operation;
+  -o-transition-timing-function: @operation;
+  -ms-transition-timing-function: @operation;
+  transition-timing-function: @operation;
+}
+.transition-delay(@delay: 0s) {
+  -webkit-transition-delay: @delay;
+  -moz-transition-delay: @delay;
+  -o-transition-delay: @delay;
+  -ms-transition-delay: @delay;
+  transition-delay: @delay;
+}
+
+//animation 动画
+.animation(@name,@t:2s,@operation:ease,@delay:0s,@count:1,@direction:normal,@fillMode:both){
+  -moz-animation: @name @t @operation @delay @count @direction @fillMode;
+  -webkit-animation: @name @t @operation @delay @count @direction @fillMode;
+  -o-animation: @name @t @operation @delay @count @direction @fillMode;
+  -ms-animation: @name @t @operation @delay @count @direction @fillMode;
+  animation: @name @t @operation @delay @count @direction @fillMode;
+}
+.animation-bug(@name,@t:2s,@operation:ease,@delay:0s,@count:1,@direction:normal,@fillMode:both,@state:running){
+  -moz-animation: @name @t @operation @delay @count @direction @fillMode @state;
+  -webkit-animation: @name @t @operation @delay @count @direction @fillMode @state;
+  -o-animation: @name @t @operation @delay @count @direction @fillMode @state;
+  -ms-animation: @name @t @operation @delay @count @direction @fillMode @state;
+  animation: @name @t @operation @delay @count @direction @fillMode @state;
+}
+//animation-name
+.animation-name(@name){
+  -moz-animation-name: @name;
+  -webkit-animation-name: @name;
+  -o-animation-name: @name;
+  -ms-animation-name: @name;
+  animation-name: @name;
+}
+//animation-duration
+.animation-duration(@t:0){
+  -moz-animation-duration: @t;
+  -webkit-animation-duration: @t;
+  -o-animation-duration: @t;
+  -ms-animation-duration: @t;
+  animation-duration: @t;
+}
+//animation-timing-function
+.animation-timing-function(@operation:ease){
+  -moz-animation-timing-function: @operation;
+  -webkit-animation-timing-function: @operation;
+  -o-animation-timing-function: @operation;
+  -ms-animation-timing-function: @operation;
+  animation-timing-function: @operation;
+}
+//animation-delay
+.animation-delay(@delay:0s){
+  -moz-animation-delay: @delay;
+  -webkit-animation-delay: @delay;
+  -o-animation-delay: @delay;
+  -ms-animation-delay: @delay;
+  animation-delay: @delay;
+}
+//animation-iteration-count
+.animation-iteration-count(@count:1){
+  -moz-animation-iteration-count: @count;
+  -webkit-animation-iteration-count: @count;
+  -o-animation-iteration-count: @count;
+  -ms-animation-iteration-count: @count;
+  animation-iteration-count: @count;
+}
+//animation-direction
+.animation-direction(@direction:normal){
+  -moz-animation-direction: @direction;
+  -webkit-animation-direction: @direction;
+  -o-animation-direction: @direction;
+  -ms-animation-direction: @direction;
+  animation-direction: @direction;
+}
+//animation-play-state
+.animation-play-state(@state:running){
+  -moz-animation-play-state: @state;
+  -webkit-animation-play-state: @state;
+  -o-animation-play-state: @state;
+  -ms-animation-play-state: @state;
+  animation-play-state: @state;
+}
+//animation-fill-mode
+.animation-fill-mode(@fillMode:both){
+  -moz-animation-fill-mode: @fillMode;
+  -webkit-animation-fill-mode: @fillMode;
+  -o-animation-fill-mode: @fillMode;
+  -ms-animation-fill-mode: @fillMode;
+  animation-fill-mode: @fillMode;
+}
+
+//避免编译
+.calc_width(){
+  width: ~'calc(100px - 20px)';
+}

@@ -1,0 +1,355 @@
+﻿// =============================================
+// @des:            global
+// @author:         yzh
+// @url:
+// @time:           2016-12-14
+// @lastTime     	2016-12-14
+// @version         2.3
+// @特性
+// =============================================
+
+@charset "utf-8";
+
+//import module config
+@import "mylib/config";
+
+//import utils
+@import "mylib/utils";
+
+//import animation
+@import "mylib/animation";
+
+//@font-face 自定义字库
+//.font-face(fzltchk,'../fonts/fzltchkgbk10.TTF','../fonts/fzltchkgbk10.TTF02','../fonts/fzltchkgbk10.TTF03','../fonts/fzltchkgbk10.TTF04');
+
+//css reset
+.reset();
+
+//css hook
+.hookCSS();
+
+html,body{
+//  -webkit-text-size-adjust:none;
+//  text-size-adjust:none;
+  font-family: @fontFamily;
+  line-height: @lineHeight;
+  color:@color;
+  background-color:@background;
+}
+//css rem layout
+@media screen and (min-width: 320px) and (max-width: 375px) {
+  html{
+    font-size: @fontSize_320;
+  }
+}
+@media screen and (min-width: 375px) and (max-width: 414px) {
+  html{
+    font-size: @fontSize_375;
+  }
+}
+@media screen and (min-width: 414px) and (max-width: 640px){
+  html{
+    font-size: @fontSize_414;
+  }
+}
+@media screen and (min-width: 640px) and (max-width: 720px){
+  html{
+    font-size: @fontSize_640;
+  }
+}
+@media screen and (min-width: 720px) and (max-width: 750px){
+  html{
+    font-size: @fontSize_720;
+  }
+}
+@media screen and (min-width: 750px) and (max-width: 800px){
+  html{
+    font-size: @fontSize_750;
+  }
+}
+@media screen and (min-width: 800px){
+  html{
+    font-size: @fontSize_800;
+  }
+}
+
+html{
+  height: 100%;
+  overflow: hidden;
+  min-height: 100%;
+  background-color: #000000;
+  -webkit-overflow-scrolling: touch;
+  overflow-scrolling: touch;
+}
+body{
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  min-height: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  background-color: #ffffff;
+
+}
+.img_layout(@layout);
+a{
+  display: block;
+  outline: none;
+}
+input[type=number]{
+  -moz-appearance:textfield;
+}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+//page
+#page{
+  position: relative;
+  width: 100%;
+  height: 100%;
+  #pageBody{
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    .common{
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      .swiper-container{
+        height: 100%;
+      }
+    }
+  }
+}
+
+//bg_music_img
+#bg_music_img{
+  @w:52px;
+  @h:52px;
+  .imgpos-top(@layout,@w,@h,-360,20);
+  z-index: 9;
+  .on{
+    position: absolute;
+    left: 0;
+    top: 0;
+    .animation(music,4s,linear,0s,infinite,normal);
+  }
+  .off{
+    display: none;
+  }
+  &.active{
+    .on{
+      display: none;
+    }
+    .off{
+      display: block;
+    }
+  }
+}
+
+//arrowBot
+#arrowBot{
+//  display: none;
+  @w:60px;
+  @h:126px;
+  .imgpos-bot(@layout,@w,@h,-60/2,30);
+  .animation(arrow,2s,ease-in-out,0s,infinite,normal);
+  z-index: 9;
+}
+
+//alert
+#alert{
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.6);
+  z-index: 99;
+  .dialog{
+    position: absolute;
+    left: 10%;
+    top: 30%;
+    width: 80%;
+    background: #870401;
+    .border-radius(5px);
+    height: auto;
+    padding-bottom: 4rem;
+    p{
+      margin-top: 1.6rem;
+      font-size: 1.2rem;
+      line-height: 1.4;
+      text-align: center;
+      font-weight: bold;
+      color: #ffffff;
+      padding: 0 20px;
+    }
+    .button{
+      cursor: pointer;
+      position: absolute;
+      bottom: 12px;
+      font-size: 1.2rem;
+      padding: 5px;
+      .border-radius(4px);
+      background-color: #d9d5d5;
+      color: #000000;
+    }
+    .sureBtn{
+      left: 50%;
+      .transformt-translateX(-50%);
+    }
+  }
+}
+
+//confirm
+#confirm{
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.6);
+  z-index: 99;
+  .dialog{
+    position: absolute;
+    left: 10%;
+    top: 30%;
+    width: 80%;
+    background: #870401;
+    .border-radius(5px);
+    padding-bottom: 4rem;
+    p{
+      margin-top: 1.6rem;
+      font-size: 1.2rem;
+      line-height: 1.4;
+      text-align: center;
+      font-weight: bold;
+      color: #ffffff;
+    }
+    .button{
+      cursor: pointer;
+      position: absolute;
+      bottom: 10px;
+      font-size: 1.2rem;
+      padding: 5px;
+      .border-radius(4px);
+      background-color: #d9d5d5;
+      color: #000000;
+    }
+    .sureBtn{
+      left: 20%;
+    }
+    .cancelBtn{
+      right: 20%;
+    }
+  }
+}
+
+//loading
+#loading{
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 999;
+  background-color: rgba(0,0,0,0.6);
+  .loadingImg{
+    @w:61px;
+    @h:64px;
+    .imgpos-top(@layout,@w,@h,-61/2,460);
+    .animation(loading,2s,linear,0s,infinite,normal);
+  }
+}
+
+//share
+#share{
+  display: none;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 99;
+  background-color: rgba(0,0,0,0.6);
+  .share_i{
+    @w:518px;
+    @h:462px;
+    .imgpos-top(@layout,@w,@h,-518/2,100);
+  }
+}
+
+//logo
+#logo{
+  display: none;
+  @w:308px;
+  @h:74px;
+  .imgpos-top(@layout,@w,@h,34,36);
+  z-index: 9;
+}
+
+//默认页面布局采取横向百分比（不包含pageBody之外的）
+.img_layout(@layout);
+.swiper-slide{
+  //自动选择纵横百分比布局
+  .writing_mode_layout(@layout);
+}
+
+//-----------------------------------------------index---------------------------------------------
+#index{
+  //panel-page01
+  .panel-page01{
+    @mainDelay: 0.5s;
+    background-color: #fff;
+    .demo{
+      @w:45px;
+      @h:45px;
+      .imgpos-top(@layout,@w,@h,-45/2,500);
+    }
+  }
+
+  //panel-page02
+  .panel-page02{
+    @mainDelay: 0.5s;
+    background-color: #fff;
+    .demo{
+      @w:52px;
+      @h:52px;
+      .imgpos-top(@layout,@w,@h,-52/2,500);
+    }
+  }
+
+}
+
+//-----------------------------------------------popups---------------------------------------------
+//popup
+.popup{
+  .opacity(0);
+  .transform-scale(0.01);
+  .transition(all,0.4s,ease,0s);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 99;
+  background-color: rgba(0,0,0,0.7);
+  &.active{
+    .opacity(100);
+    .transformt-matrix();
+  }
+}
+
+//popupForDemo
+#popupForDemo{
+  display: none;
+}

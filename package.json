@@ -1,0 +1,39 @@
+{
+  "name": "gulptest",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "gulp": "^3.9.1"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-base64": "^0.1.3",
+    "gulp-changed": "^1.3.2",
+    "gulp-clean": "^0.3.2",
+    "gulp-concat": "^2.6.1",
+    "gulp-if": "^2.0.2",
+    "gulp-imagemin": "^3.1.1",
+    "gulp-less": "^3.3.0",
+    "gulp-minify-css": "^1.2.4",
+    "gulp-notify": "^2.2.0",
+    "gulp-uglify": "^2.0.0",
+    "gulp-watch": "^4.3.11",
+    "require-dir": "^0.3.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "develop": "gulp develop --develop",
+    "release": "gulp release --release"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yzh12431/gulptest.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yzh12431/gulptest/issues"
+  },
+  "homepage": "https://github.com/yzh12431/gulptest#readme"
+}
